@@ -16,4 +16,4 @@ ItemProcessor : This interface is used for item transformation. It processes inp
 
 ItemWriter : This interface is used for generic output operations. It writes the datas which are transformed by ItemProcessor. For example, the datas can be written to database, memory or outputstream (etc). In this sample application, we will write to database.
 
-This project shows how to develop Chunk Oriented Processing in Spring Batch. Used Technologies : JDK 1.7.0_09, Spring 3.1.3, Spring Batch 2.1.9, Hibernate 4.1.8, MySQL 5.5.8, MySQL Connector 5.1.17 and Maven 3.0.4
+This project shows how to develop Chunk Oriented Processing in Spring Batch. Used Technologies : JDK 1.7.0_09, Spring 3.1.3, Spring Batch 2.1.9, Hibernate 4.1.8, Tomcat JDBC 7.0.27, MySQL 5.5.8, MySQL Connector 5.1.17 and Maven 3.0.4
