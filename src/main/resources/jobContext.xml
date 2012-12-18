@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/batch 
+                http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
+                                
+    <import resource="dataContext.xml"/>
+    
+    <!-- jobRepository Declaration -->
+    <bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+    </bean>
+    
+    <!-- jobLauncher Declaration -->
+    <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher" >
+        <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+    
+    <!-- Reader Bean Declarations -->
+    <bean id="firstTestReader" class="com.onlinetechvision.item.TestReader">
+    	<property name="maxIndex" value="2"/>
+	    <property name="namePrefix" value="firstname"/>
+	    <property name="surnamePrefix" value="firstsurname"/>
+    </bean>
+    
+    <bean id="secondTestReader" class="com.onlinetechvision.item.TestReader">
+        <property name="maxIndex" value="2"/>
+	    <property name="namePrefix" value="secondname"/>
+	    <property name="surnamePrefix" value="secondsurname"/>
+    </bean>
+    
+    <bean id="thirdTestReader" class="com.onlinetechvision.item.TestReader">
+        <property name="maxIndex" value="3"/>
+	    <property name="namePrefix" value="thirdname"/>
+	    <property name="surnamePrefix" value="thirdsurname"/>
+    </bean>
+    
+    <bean id="fourthTestReader" class="com.onlinetechvision.item.TestReader">
+        <property name="maxIndex" value="3"/>
+	    <property name="namePrefix" value="fourthname"/>
+	    <property name="surnamePrefix" value="fourthsurname"/>
+    </bean>
+    
+    <bean id="fifthTestReader" class="com.onlinetechvision.item.TestReader">
+        <property name="maxIndex" value="3"/>
+	    <property name="namePrefix" value="fifthname"/>
+	    <property name="surnamePrefix" value="fifthsurname"/>
+    </bean>
+    
+    <bean id="failedCaseTestReader" class="com.onlinetechvision.item.FailedCaseTestReader">
+        <property name="maxIndex" value="1"/>
+	    <property name="namePrefix" value="failedcasename"/>
+	    <property name="surnamePrefix" value="failedcasesurname"/>
+    </bean>
+    
+    <!-- Processor Bean Declaration -->
+    <bean id="testProcessor" class="com.onlinetechvision.item.TestProcessor" />
+    
+    <!-- Writer Bean Declaration -->
+    <bean id="testWriter" class="com.onlinetechvision.item.TestWriter" >
+    	<property name="userService" ref="userService"/>
+    </bean>
+    
+    <!-- Failed Step Tasklet Declaration -->
+    <bean id="failedStepTasklet" class="com.onlinetechvision.tasklet.FailedStepTasklet">
+        <property name="taskResult"  value="Error occurred!" />
+    </bean> 
+    
+    <!-- Batch Job Declarations -->
+    <batch:job id="firstJob"> 
+		<batch:step id="firstStep" next="secondStep">
+			<batch:tasklet>
+				<batch:chunk reader="firstTestReader" processor="testProcessor" writer="testWriter" commit-interval="2"/>
+			</batch:tasklet>
+		</batch:step>
+		<batch:step id="secondStep">
+			<batch:tasklet>
+				<batch:chunk reader="secondTestReader" processor="testProcessor" writer="testWriter" commit-interval="2"/>
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+	
+	<batch:job id="secondJob">
+		<batch:step id="thirdStep">
+			<batch:tasklet>
+				<batch:chunk reader="thirdTestReader" processor="testProcessor" writer="testWriter" commit-interval="2"/>
+			</batch:tasklet>
+			<batch:next on="*" to="fourthStep" />
+	        <batch:next on="FAILED" to="firstFailedStep" />
+	    </batch:step>
+	    <batch:step id="fourthStep">
+			<batch:tasklet>
+				<batch:chunk reader="fourthTestReader" processor="testProcessor" writer="testWriter" commit-interval="2"/>
+			</batch:tasklet>
+		</batch:step>
+		<batch:step id="firstFailedStep">
+            <batch:tasklet ref="failedStepTasklet" />
+        </batch:step>
+	</batch:job>
+	
+	<batch:job id="thirdJob">
+		<batch:step id="fifthStep">
+			<batch:tasklet>
+				<batch:chunk reader="failedCaseTestReader" processor="testProcessor" writer="testWriter" commit-interval="2"/>
+			</batch:tasklet>
+			<batch:next on="*" to="sixthStep" />
+	        <batch:next on="FAILED" to="secondFailedStep" />
+	    </batch:step>
+	    <batch:step id="sixthStep">
+			<batch:tasklet>
+				<batch:chunk reader="fifthTestReader" processor="testProcessor" writer="testWriter" commit-interval="2"/>
+			</batch:tasklet>
+		</batch:step>
+		<batch:step id="secondFailedStep">
+            <batch:tasklet ref="failedStepTasklet" />
+        </batch:step>
+	</batch:job>
+	
+</beans>

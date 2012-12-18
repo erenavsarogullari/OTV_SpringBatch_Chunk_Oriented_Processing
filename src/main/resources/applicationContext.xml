@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+				http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+				http://www.springframework.org/schema/batch 
+                http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
+
+	<import resource="jobContext.xml"/>
+	
+    <!-- User DAO Declaration -->
+	<bean id="userDAO" class="com.onlinetechvision.user.dao.UserDAO">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<!-- User Service Declaration -->
+	<bean id="userService" class="com.onlinetechvision.user.service.UserService">
+		<property name="userDAO" ref="userDAO" />
+	</bean>	
+	
+	<!-- BatchProcessStarter Declaration -->
+	<bean id="batchProcessStarter" class="com.onlinetechvision.spring.batch.BatchProcessStarter">
+		<property name="jobLauncher" ref="jobLauncher"/>
+		<property name="jobRepository" ref="jobRepository"/>
+		<property name="firstJob" ref="firstJob"/>
+		<property name="secondJob" ref="secondJob"/>
+		<property name="thirdJob" ref="thirdJob"/>
+    </bean> 
+    
+</beans>
